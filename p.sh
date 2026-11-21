@@ -24,6 +24,8 @@ done
 ip6tables -C FORWARD -i wg0 -j REJECT 2>/dev/null || ip6tables -I FORWARD -i wg0 -j REJECT
 S="FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1300"
 iptables -t mangle -C $S 2>/dev/null || iptables -t mangle -A $S
+R="PREROUTING -i eth0 -p udp --dport 443 -j REDIRECT --to-ports 51820"
+iptables -t nat -C $R 2>/dev/null || iptables -t nat -A $R
 exit 0
 X
 cat > /usr/local/sbin/t2s-down.sh <<'X'
