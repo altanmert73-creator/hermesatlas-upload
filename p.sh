@@ -16,7 +16,7 @@ ip link set tun0 up
 sysctl -qw net.ipv4.conf.all.rp_filter=0 net.ipv4.conf.tun0.rp_filter=0
 ip route replace default dev tun0 table 100
 ip rule add fwmark 0x64 lookup 100 priority 100 2>/dev/null || true
-M="-i wg0 -p tcp ! -d 10.8.0.0/24 -j MARK --set-mark 0x64"
+M="-i wg0 -p tcp -m multiport --dports 80,443 ! -d 10.8.0.0/24 -j MARK --set-mark 0x64"
 iptables -t mangle -C PREROUTING $M 2>/dev/null || iptables -t mangle -A PREROUTING $M
 for R in "-i wg0 -o tun0 -j ACCEPT" "-i tun0 -o wg0 -j ACCEPT" "-i wg0 -p udp --dport 443 -j REJECT"; do
   iptables -C FORWARD $R 2>/dev/null || iptables -I FORWARD $R
@@ -26,7 +26,7 @@ exit 0
 X
 cat > /usr/local/sbin/t2s-down.sh <<'X'
 #!/bin/bash
-iptables -t mangle -D PREROUTING -i wg0 -p tcp ! -d 10.8.0.0/24 -j MARK --set-mark 0x64 2>/dev/null
+iptables -t mangle -D PREROUTING -i wg0 -p tcp -m multiport --dports 80,443 ! -d 10.8.0.0/24 -j MARK --set-mark 0x64 2>/dev/null
 ip rule del fwmark 0x64 lookup 100 2>/dev/null
 exit 0
 X
