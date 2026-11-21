@@ -38,7 +38,7 @@ Description=wg0 -> Oxylabs ISP proxy
 After=network-online.target wg-quick@wg0.service
 Wants=network-online.target
 [Service]
-ExecStart=/usr/local/bin/tun2socks -device tun0 -proxy $P -loglevel warning
+ExecStart=/usr/local/bin/tun2socks --device tun0 --proxy $P --loglevel warning
 ExecStartPost=/usr/local/sbin/t2s-up.sh
 ExecStopPost=/usr/local/sbin/t2s-down.sh
 Restart=always
